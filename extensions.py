@@ -1,13 +1,15 @@
 import requests
 import json
-from Config import values
+from config import values
+
 
 class APIException(Exception):
     pass
 
+
 class CryptoConverter:
     @staticmethod
-    def convert(base: str, quote: str, amount: str):
+    def get_price(base: str, quote: str, amount: str):
 
         if base == quote:
             raise APIException(f'Не удалось перевести одинаковые валюты: {base}-{quote}')
@@ -26,8 +28,9 @@ class CryptoConverter:
             amount = float(amount)
         except ValueError:
             raise APIException(f'Не удалось обработать количество {amount}')
-
+        # API запросы с помощью библиотеки Requests
         r = requests.get(f'https://min-api.cryptocompare.com/data/price?fsym={base_ticker}&tsyms={quote_ticker}')
+        # Парсинг полученных ответов с помощью библиотеки JSON
         result = json.loads(r.content)[values[quote]]
         result *= amount
 
